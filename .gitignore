@@ -1,0 +1,54 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+
+# --- Virtual environments ---
+venv/
+env/
+ENV/
+.venv/
+
+# --- Conda ---
+# (conda envs usually live outside the repo, but just in case)
+envs/
+
+# --- Project outputs: generated at training/eval time, not source ---
+results/
+*.pt
+*.pth
+*.npz
+
+# --- Videos / demo recordings ---
+# Keep a curated demo GIF if you add one manually to e.g. assets/,
+# but ignore raw evaluation recordings.
+results/videos/
+*.mp4
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*.ipynb
+
+# --- Editor / IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+run*.log
+nohup.out
+
+# --- Type checking / linting caches ---
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
