@@ -1,5 +1,5 @@
 # --- Base image ---
-#python:3.11-slim: a minimal Debian-based image with Python 3.11
+# python:3.11-slim: a minimal Debian-based image with Python 3.11
 # preinstalled. "slim" keeps the image small (no compilers or docs);
 # we add back only what is actually needed below. Matches the Python
 # version used in the local conda environment, for reproducibility.
@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 # "rm -rf /var/lib/apt/lists/*" deletes apt's package index after
-# installing, it is not needed at runtime and just adds dead weight
+# installing; it is not needed at runtime and just adds dead weight
 # to the image layer.
 
 # --- Working directory ---
@@ -28,7 +28,7 @@ WORKDIR /app
 
 # --- Dependencies layer (cached separately from source code) ---
 # Copying ONLY requirements.txt first, then installing, means Docker
-# can reuse this (slow) layer on rebuils as long as requirements.txt
+# can reuse this (slow) layer on rebuilds as long as requirements.txt
 # hasn't changed, even if you've edited train.py since.
 # If we copied the whole project before running pip install, every
 # code change would invalidate the cache and force a full reinstall.
@@ -36,13 +36,13 @@ COPY requirements.txt .
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
 # --- Source code layer ---
-# This changes often during developement, so it's copied last,
+# This changes often during development, so it's copied last,
 # keeping the expensive dependency layer above untouched by cache.
 COPY src/ ./src/
 WORKDIR /app/src
 
 # --- Default command ---
 # Runs when the container starts with no other command specified.
-# Easy to override at runtime, e.g:
-#   docker run <image> python evalaute.py --episodes 20
+# Easy to override at runtime, e.g.:
+#   docker run <image> python evaluate.py --episodes 20
 CMD ["python", "train.py"]

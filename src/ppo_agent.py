@@ -9,11 +9,11 @@ rollout storage and advantage computation) and 'train.py' orchestrates the loop 
 
 Two things live here:
 1) 'ActorCritic' - A small MLP with two heads sharing no parameters:
-    - The actor outputs the mean of a diagonal Gauss policy over continuous actions.
+    - The actor outputs the mean of a diagonal Gaussian policy over continuous actions.
     - The critic outputs a scalar state-value estimate.
     Continuous actions are why the policy is a Gaussian distribution rather than a categorical
     one.
-2) 'PPOAgent' - Wraps the network and optimiser, and implements the PPO update: for 'update_epochs'
+2) 'PPOAgent' - Wraps the network and optimizer, and implements the PPO update: for 'update_epochs'
     passes over the rollout buffer's minibatches, it computes the clipped surrogate policy loss,
     the value loss, subtracts an entropy bonus to encourage exploration, and takes a gradient step
     with gradient norm clipping for stability.
@@ -28,7 +28,7 @@ from config import PPOConfig
 
 def _layer_init(layer: nn.Linear, std: float = np.sqrt(2), bias_const: float = 0.0) -> nn.Linear:
     """
-    Orthogonal weight initialisation, standard practice for PPO.
+    Orthogonal weight initialization, standard practice for PPO.
     """
     nn.init.orthogonal_(layer.weight, std)
     nn.init.constant_(layer.bias, bias_const)
@@ -43,7 +43,8 @@ class ActorCritic(nn.Module):
     vector shared across all states. The critic is a separate MLP head estimating the state-value
     function V(s), used to compute advantages via GAE.
     
-    Parameters:
+    Parameters
+    ----------
     obs_dim: int
         Dimensionality of the flattened observation space.
     action_dim: int
@@ -98,18 +99,20 @@ class ActorCritic(nn.Module):
         """
         Sample an action (or evaluate a given one) under the current policy.
         
-        Parameters:
-        obs: Torch.tensor
+        Parameters
+        ----------
+        obs: torch.Tensor
             shape (batch, obs_dim)
         action: Optional[torch.Tensor]
             If provided, the distribution is evaluated at this action instead of sampling a
             new one.
         
-        Returns:
+        Returns
+        -------
         action: torch.Tensor
             shape (batch, action_dim)
         log_prob: torch.Tensor
-            shape (batch, )
+            shape (batch,)
             Sum of per-dimension log-probabilities, needed for the PPO probability ratio.
         entropy: torch.Tensor
             shape (batch,)
@@ -134,9 +137,10 @@ class ActorCritic(nn.Module):
 
 class PPOAgent:
     """
-    Wraps an 'ActorCritic' network with an optimiser and the PPO update rule.
+    Wraps an 'ActorCritic' network with an optimizer and the PPO update rule.
     
-    Parameters:
+    Parameters
+    ----------
     obs_dim: int
     action_dim: int
     cfg: PPOConfig
@@ -170,11 +174,12 @@ class PPOAgent:
         """
         Run 'update_epochs' passes of PPO's clipped-objective update over the buffer.
         
-        For each minibatch, the probability ration between the current and old policy
-        is clipped to [1 - clip_coef, 1 + clip_coef] to prevent destrictively large
+        For each minibatch, the probability ratio between the current and old policy
+        is clipped to [1 - clip_coef, 1 + clip_coef] to prevent destructively large
         policy updates.
         
-        Returns:
+        Returns
+        -------
         dict of average diagnostic losses over the update, useful for logging
         (policy_loss, value_loss, entropy, approx_kl).
         """

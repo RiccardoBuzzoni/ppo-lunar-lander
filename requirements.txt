@@ -1,7 +1,7 @@
 # Core deep learning framework
 torch>=2.2
 
-# RL envs (Box2D extra needed for LunarLanderContinous/ Bipedal Walker)
+# RL envs (Box2D extra needed for LunarLanderContinuous/ Bipedal Walker)
 gymnasium[box2d]>=0.29
 
 # Numerical computing
@@ -12,4 +12,4 @@ matplotlib>=3.8
 
 # Optional but recommended:
 # tqdm # progress bars during training
-# tensorboard # training curve visualisation (as an alternative to matplotlib)
+# tensorboard # training curve visualization (as an alternative to matplotlib)

@@ -153,7 +153,7 @@ def train(cfg: PPOConfig) -> None:
             next_obs = torch.tensor(next_obs_np, dtype=torch.float32, device=device)
             next_done = torch.tensor(next_done_np, dtype=torch.float32, device=device)
 
-            # gymnasium's vector env auto-resets: episode stats are
+            # Gymnasium's vector env auto-resets: episode stats are
             # reported via the `infos` dict when an episode ends.
             if "episode" in infos:
                 finished = infos["episode"]["_r"] if "_r" in infos["episode"] else None

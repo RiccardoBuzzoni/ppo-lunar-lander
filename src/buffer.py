@@ -3,13 +3,13 @@ Rollout buffer for PPO.
 
 Role in the pipeline
 --------------------
-PPO is an on-policy algorithm, it collects a fixed-size batch of experience with the current policy,
+PPO is an on-policy algorithm; it collects a fixed-size batch of experience with the current policy,
 computes advantages for that batch, performs a handful of gradient updates on it, and then throws the
 data away. This module implements that short-lived storage.
 
 Concretely, it is responsible for:
-1)  Storing one rollout's woth of transitions collected across 'num_envs' parallel environments over
-    'num_steps' timestamps each, as flat pre-allocated tensor of shape (num_steps, num_envs, *feature_shape).
+1)  Storing one rollout's worth of transitions collected across 'num_envs' parallel environments over
+    'num_steps' timesteps each, as a flat pre-allocated tensor of shape (num_steps, num_envs, *feature_shape).
 2)  Computing advantages and returns via Generalized Advantage Estimation (GAE) once the rollout is complete,
     using the value function's bootstrap estimate for the final state of each environment.
 3)  Serving the collected data back out as shuffled minibatches for the PPO update epochs ('update_epochs' 
@@ -28,7 +28,8 @@ class RolloutBuffer:
     """
     Fixed-size, pre-allocated storage for one PPO rollout.
     
-    Parameters:
+    Parameters
+    ----------
     num_steps: int
         Number of timesteps collected per environment before an update.
     num_envs: int
@@ -41,8 +42,8 @@ class RolloutBuffer:
         Device the tensors live on (should match the policy's device).
     gamma: float
         Discount factor used in GAE.
-    gae_lamda: float
-        Lambda smoothing parameter used int GAE (bias/variance trade.off).
+    gae_lambda: float
+        Lambda smoothing parameter used in GAE (bias/variance trade-off).
     """
     def __init__(
             self,
@@ -106,11 +107,12 @@ class RolloutBuffer:
         Compute GAE advantages and bootstrapped returns for the full rollout.
         
         Must be called after the buffer has been completely filled ('step == num_steps'), using
-        the critic's  value estimate for the state immediately following the last stored
+        the critic's value estimate for the state immediately following the last stored
         transition (the "bootstrap" value), since the true return beyond the rollout horizon
         is unknown.
         
-        Parameters:
+        Parameters
+        ----------
         last_value: torch.Tensor
             Value estimate for the state after the final stored step.
         last_done: torch.Tensor
@@ -131,7 +133,7 @@ class RolloutBuffer:
                 self.rewards[t] + self.gamma * next_value * next_non_terminal - self.values[t]
             )
             # Recursive GAE accumulation:
-            # exponentially-weigthed sum of future deltas, discounted by (gamma*gae_lambda) each step.
+            # exponentially-weighted sum of future deltas, discounted by (gamma*gae_lambda) each step.
             last_gae_lam = delta + self.gamma * self.gae_lambda * next_non_terminal * last_gae_lam
             self.advantages[t] = last_gae_lam
 
@@ -145,9 +147,10 @@ class RolloutBuffer:
         
         Flattens the (num_steps, num_envs, ...) storage into a single batch dimension,
         shuffles the indices, and yields one dict of tensors per minibatch. Advantages
-        are normalised per-minibatch to stabilise the policy gradient scale.
+        are normalized per-minibatch to stabilize the policy gradient scale.
         
-        Parameters:
+        Parameters
+        ----------
         batch_size: int
             Total number of samples in the rollout (num_steps * num_envs).
         num_minibatches: int
@@ -185,4 +188,3 @@ class RolloutBuffer:
         Reset the write position, allowing the buffer to be reused in-place.
         """
         self.step = 0
-        

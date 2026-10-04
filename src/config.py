@@ -1,8 +1,8 @@
 """
 Configuration for the PPO continuous control project.
 
-Centralises all hyperparameters in a single dataclass so that
-train.py, evaluate.py and demo scripts share one source of truth.
+Centralizes all hyperparameters in a single dataclass so that
+train.py, evaluate.py, and demo scripts share one source of truth.
 """
 
 from dataclasses import dataclass, field
@@ -22,17 +22,17 @@ class PPOConfig:
     update_epochs: int = 10         # PPO epochs per rollout
 
     # --- PPO hyperparameters ---
-    gamma: float = 0.99 # discount factor
+    gamma: float = 0.99             # discount factor
     gae_lambda: float = 0.95        # GAE smoothing parameter
     clip_coef: float = 0.2          # PPO clipping epsilon
     clip_value_loss: bool = True
     ent_coef: float = 0.01          # initial entropy bonus coefficient (encourages exploration)
     ent_coef_final: float = 0.0     # entropy bonus coefficient at the end of training
-    vf_coef: float = 0.5            # value function loss weigth
+    vf_coef: float = 0.5            # value function loss weight
     anneal_ent_coef: bool = True    # linearly decay ent_coef from ent_coef to ent_coef_final
     max_grad_norm: float = 0.5      # gradient clipping
 
-    # --- Optimiser ---
+    # --- Optimizer ---
     learning_rate: float = 3e-4
     anneal_lr: bool = True          # linearly decay LR to 0 over training
 
@@ -41,13 +41,13 @@ class PPOConfig:
     num_hidden_layers: int = 2
     log_std_init: float = 0.0       # initial log std for the Gaussian policy
 
-    # --- Observation/ reward optimisation ---
+    # --- Observation/reward optimization ---
     normalize_obs: bool = True
     normalize_reward: bool = True
     clip_obs: float = 10.0
     clip_reward: float = 10.0
 
-    # --- Loggin / Checkpoints ---
+    # --- Logging / Checkpoints ---
     log_interval: int = 1           # log every N updates
     checkpoint_interval: int = 50   # save model every N updates
     result_dir: str = "results"

@@ -11,7 +11,7 @@ policy for a number of full episodes with exploration turned off, and reports th
 Two choices that differ from training on purpose:
 - Deterministic actions: instead of sampling from the Gaussian policy, used during training
   to explore, evaluation uses the distribution's mean directly. This reflects the policy's
-  "best guess" rather than its exploratory behavior, and it standard practice for reporting
+  "best guess" rather than its exploratory behavior, and it is standard practice for reporting
   final performance.
 - No reward normalization: training uses 'NormalizeReward' to stabilize the value function's
   learning signal, but a normalized reward is meaningless for reporting. Evaluation therefore
@@ -20,7 +20,7 @@ Two choices that differ from training on purpose:
 Caveat on observation normalization: the policy was trained on observations normalized with
 running statistics accumulated over millions of steps. This script re-wraps the environment
 with a fresh 'NormalizeObservation' wrapper, whose statistics start from scratch and adapt
-online as evaluation episodes run. For a short evaluation this can sligthly mismatch the
+online as evaluation episodes run. For a short evaluation this can slightly mismatch the
 distribution the policy was trained on. Running more episodes gives the running statistics
 time to settle and produces a more reliable estimate.
 """
@@ -143,7 +143,7 @@ def evaluate(
 
             done = terminated or truncated
 
-            # Prefer the raw, un-normalized return reported by
+            # Prefer the raw, unnormalized return reported by
             # RecordEpisodeStatistics (via info["episode"]) when
             # available, since 'reward' here may be wrapper-modified
             # upstream in other configurations.
@@ -164,7 +164,7 @@ def evaluate(
         "max_return": float(np.max(returns)),
     }
     print(
-        f"\nEvaluation over {num_episodes} episodes:"
+        f"\nEvaluation over {num_episodes} episodes: "
         f"mean={stats['mean_return']:.2f} +/- {stats['std_return']:.2f} "
         f"(min={stats['min_return']:.2f}, max={stats['max_return']:.2f})"
     )
