@@ -1,0 +1,13 @@
+# Same rationale as .gitignore: these are generated/local artifacts,
+# not inputs the image build needs. Keeping them out speeds up the
+# build (smaller context sent to the Docker daemon) and prevents a
+# stale local results/ from accidentally ending up inside the image.
+results/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.vscode/
+*.log
+nohup.out
+assets/

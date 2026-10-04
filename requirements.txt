@@ -2,7 +2,7 @@
 torch>=2.2
 
 # RL envs (Box2D extra needed for LunarLanderContinous/ Bipedal Walker)
-gymnasium>=0.29
+gymnasium[box2d]>=0.29
 
 # Numerical computing
 numpy>=1.26
