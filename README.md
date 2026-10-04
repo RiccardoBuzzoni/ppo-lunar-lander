@@ -1,19 +1,19 @@
 # PPO LunarLander — From Scratch
 
-A from-scratch PyTorch implementation of Proximal Policy Optimization (PPO) for continuous control, trained and evaluated on `LunarLanderContinuous-v3` (Gymnasium). No Stable-Baselines3, the actor-critic network, GAE, and the clipped PPO update are all implemented directly.
+A from-scratch PyTorch implementation of Proximal Policy Optimization (PPO) for continuous control, trained and evaluated on `LunarLanderContinuous-v3` (Gymnasium). No Stable-Baselines3 — the actor-critic network, GAE, and the clipped PPO update are all implemented directly.
 
 ![demo](assets/demo.gif)
 
 ## Results
 
-Trained for 25M timesteps on CPU (8 parallel environments), the final policy achieves:
+Trained for 10M timesteps on CPU (8 parallel environments), the final policy achieves:
 
 | Metric | Value |
 |---|---|
 | Mean return (250 episodes) | **205.07 ± 60.83** |
 | Min / Max return | 24.92 / 305.07 |
 
-`LunarLanderContinuous-v3` is considered solved at a mean return ≥ 200 over 100 consecutive episodes. This policy clears that bar.
+`LunarLanderContinuous-v3` is considered solved at a mean return ≥ 200 over 100 consecutive episodes — this policy clears that bar.
 
 ## Features
 
@@ -25,18 +25,20 @@ Trained for 25M timesteps on CPU (8 parallel environments), the final policy ach
 - CLI overrides for quick experimentation without editing the config file
 
 ## Project structure
- 
+
 ```
 .
 ├── src/
-│   ├── config.py           # all hyperparameters, as asingle dataclass
-│   ├── buffer.py           # rollout storage + GAE advantage computation
-│   ├── ppo_agent.py        # actor-critic network + PPO update rule
-│   ├── train.py            # training loop orchestrator
+│   ├── config.py        # all hyperparameters, as a single dataclass
+│   ├── buffer.py         # rollout storage + GAE advantage computation
+│   ├── ppo_agent.py       # actor-critic network + PPO update rule
+│   ├── train.py           # training loop orchestrator
 │   ├── evaluate.py         # policy evaluation (deterministic, raw returns)
-│   └── results/            # generated at runtime (checkpoints, logs, videos) — gitignored
+│   └── results/             # generated at runtime (checkpoints, logs, videos) — gitignored
 ├── requirements.txt
-├── .gitignore
+├── Dockerfile
+├── .dockerignore
+├── LICENSE
 └── assets/
     └── demo.gif
 ```
@@ -46,12 +48,37 @@ Trained for 25M timesteps on CPU (8 parallel environments), the final policy ach
 Requires Python 3.11 (Box2D wheels are most reliably precompiled for this version).
 
 ```bash
-conda create -n ppo-continuous python=3.11 -y
-conda activate ppo-continuous
+conda create -n ppo-lunar python=3.11 -y
+conda activate ppo-lunar
 python -m pip install -r requirements.txt
 ```
 
+### Docker
+
+Alternatively, run everything in a container — no local Python/conda setup needed:
+
+```bash
+docker build -t ppo-lunar-lander .
+```
+
+Train (results are written back to your local `results/` folder via a volume mount):
+```bash
+docker run --rm -v $(pwd)/results:/app/src/results ppo-lunar-lander python train.py --total-timesteps 10000000
+```
+
+Evaluate:
+```bash
+docker run --rm -v $(pwd)/results:/app/src/results ppo-lunar-lander python evaluate.py --episodes 100
+```
+
+`--rm` removes the container once it exits — the only thing that needs to persist is `results/`, which the volume mount already handles.
+
 ## Usage
+
+The commands below are for running locally (see [Docker](#docker) above for the containerized equivalent). All are run from inside `src/`:
+```bash
+cd src
+```
 
 ### Train
 
@@ -92,8 +119,8 @@ A few non-obvious issues came up during development, worth documenting for anyon
 
 - **Policy stuck in a poor local optimum**: with a fixed, non-annealed entropy coefficient, the policy's action distribution collapsed to near-determinism early in training and stopped improving (vanishing policy gradient signal, `approx_kl` near zero for many updates). Annealing the entropy coefficient from a higher initial value down to zero resolved this.
 - **Evaluation returns far worse than training returns**: the policy is trained on observations normalized with running statistics accumulated over millions of steps. Re-wrapping the environment with a *fresh* normalizer at evaluation time (as is easy to do by accident) feeds the policy an unfamiliar input distribution and tanks performance — even for a policy that is actually training well. Fix: persist the running statistics (`obs_rms.npz`) after training and load them before evaluation.
-- **Value loss silently miscomputed**: in the clipped value loss, `torch.max` must compare the *squared* clipped and unclipped errors, accidentally comparing the squared error against the raw (non-squared) clipped value estimate still runs without error, but corrupts the critic's training signal.
+- **Value loss silently miscomputed**: in the clipped value loss, `torch.max` must compare the *squared* clipped and unclipped errors — accidentally comparing the squared error against the raw (non-squared) clipped value estimate still runs without error, but corrupts the critic's training signal.
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE) for details.
