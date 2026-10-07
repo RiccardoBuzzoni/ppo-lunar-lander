@@ -34,6 +34,7 @@ Trained for 10M timesteps on CPU (8 parallel environments), the final policy ach
 │   ├── ppo_agent.py       # actor-critic network + PPO update rule
 │   ├── train.py           # training loop orchestrator
 │   ├── evaluate.py         # policy evaluation (deterministic, raw returns)
+│   ├── results_showcase.ipynb  # notebook: eval, return distribution, training curves, demo
 │   └── results/             # generated at runtime (checkpoints, logs, videos) — gitignored
 ├── requirements.txt
 ├── Dockerfile
@@ -83,7 +84,7 @@ cd src
 ### Train
 
 ```bash
-python train.py --total-timesteps 25000000
+python train.py --total-timesteps 10000000
 ```
 
 Useful overrides for quick experiments:
@@ -96,7 +97,7 @@ Checkpoints and observation normalization stats are saved to `results/checkpoint
 ### Evaluate
 
 ```bash
-python evaluate.py --episodes 250
+python evaluate.py --episodes 100
 ```
 
 Add `--render` to record videos of evaluation episodes (requires `moviepy`):
@@ -105,6 +106,12 @@ python evaluate.py --episodes 8 --render
 ```
 
 Use `--stochastic` to sample actions instead of using the policy's deterministic mean.
+
+### Notebook
+
+[`src/results_showcase.ipynb`](src/results_showcase.ipynb) ties the above together in one place: it loads the trained checkpoint and runs evaluation, plots the return distribution against the solved threshold, parses a saved training log (e.g. `run.log`, produced by redirecting `train.py`'s output) to plot policy/value loss, entropy, entropy coefficient and KL divergence over training, and embeds the demo GIF/video inline.
+
+Requires `jupyter`, `ipykernel`, and `pandas` (see `requirements.txt`). Run it from inside `src/`, with a trained checkpoint already in `results/checkpoints/`.
 
 ## Algorithm notes
 

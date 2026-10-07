@@ -10,6 +10,9 @@ numpy>=1.26
 # Plotting
 matplotlib>=3.8
 
+# Log parsing / tabular data (used by results_showcase.ipynb)
+pandas>=2.0
+
 # Optional but recommended:
 # tqdm # progress bars during training
 # tensorboard # training curve visualization (as an alternative to matplotlib)

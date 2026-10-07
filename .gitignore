@@ -31,7 +31,6 @@ results/videos/
 
 # --- Jupyter ---
 .ipynb_checkpoints/
-*.ipynb
 
 # --- Editor / IDE ---
 .vscode/
